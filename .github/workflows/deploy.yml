@@ -27,6 +27,18 @@ jobs:
           workload_identity_provider: projects/663548056146/locations/global/workloadIdentityPools/github-pool/providers/github-provider
           service_account: github-actions-deploy@johnriccardi-com.iam.gserviceaccount.com
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 

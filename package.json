@@ -1,0 +1,14 @@
+{
+  "name": "worldclock-demo",
+  "version": "1.0.0",
+  "description": "World Clock Demo",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^1.4.0",
+    "jsdom": "^24.0.0"
+  }
+}
