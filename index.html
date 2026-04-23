@@ -19,12 +19,16 @@
       --accent-primary:   #6ea8fe;
       --accent-glow:      rgba(110, 168, 254, 0.12);
       --accent-dim:       rgba(110, 168, 254, 0.55);
+      --accent-badge-bg:  rgba(110, 168, 254, 0.1);
+      --accent-badge-br:  rgba(110, 168, 254, 0.2);
 
       --text-primary:     #e8eaf0;
       --text-secondary:   #8b95a6;
       --text-tertiary:    #525e70;
       --text-time:        #f0f4ff;
       --text-accent:      #6ea8fe;
+
+      --bg-radial:        rgba(110, 168, 254, 0.07);
 
       --shadow-card:      0 2px 12px rgba(0, 0, 0, 0.4),
                           0 1px 3px rgba(0, 0, 0, 0.5);
@@ -42,6 +46,38 @@
                           "Consolas", "Courier New", monospace;
 
       --transition-card:  200ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+
+    :root[data-theme="light"] {
+      --bg-base:          #f5f7fa;
+      --bg-surface:       #ffffff;
+      --bg-card:          #ffffff;
+      --bg-card-hover:    #fbfcfe;
+
+      --border-subtle:    rgba(15, 23, 42, 0.06);
+      --border-card:      rgba(15, 23, 42, 0.09);
+      --border-accent:    rgba(37, 99, 235, 0.35);
+
+      --accent-primary:   #2563eb;
+      --accent-glow:      rgba(37, 99, 235, 0.08);
+      --accent-dim:       rgba(37, 99, 235, 0.45);
+      --accent-badge-bg:  rgba(37, 99, 235, 0.08);
+      --accent-badge-br:  rgba(37, 99, 235, 0.2);
+
+      --text-primary:     #0f172a;
+      --text-secondary:   #475569;
+      --text-tertiary:    #94a3b8;
+      --text-time:        #0b1220;
+      --text-accent:      #2563eb;
+
+      --bg-radial:        rgba(37, 99, 235, 0.08);
+
+      --shadow-card:      0 1px 2px rgba(15, 23, 42, 0.04),
+                          0 2px 8px rgba(15, 23, 42, 0.06);
+      --shadow-hover:     0 8px 28px rgba(15, 23, 42, 0.10),
+                          0 2px 6px rgba(15, 23, 42, 0.06),
+                          0 0 0 1px rgba(37, 99, 235, 0.18),
+                          0 0 24px rgba(37, 99, 235, 0.05);
     }
 
     /* ── Reset & Base ────────────────────────────────────────────── */
@@ -62,13 +98,15 @@
       background-image:
         radial-gradient(
           ellipse 80% 50% at 50% -10%,
-          rgba(110, 168, 254, 0.07) 0%,
+          var(--bg-radial) 0%,
           transparent 70%
         );
       color: var(--text-primary);
       font-family: var(--font-ui);
       min-height: 100dvh;
       padding: 3rem 1.5rem 4rem;
+      transition: background-color var(--transition-card),
+                  color var(--transition-card);
     }
 
     /* ── Page Header ─────────────────────────────────────────────── */
@@ -258,8 +296,8 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--text-accent);
-      background: rgba(110, 168, 254, 0.1);
-      border: 1px solid rgba(110, 168, 254, 0.2);
+      background: var(--accent-badge-bg);
+      border: 1px solid var(--accent-badge-br);
       border-radius: var(--radius-badge);
       padding: 0.25em 0.55em;
       line-height: 1;
@@ -361,9 +399,80 @@
       60%  { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);   }
       100% { box-shadow: 0 0 0 0   rgba(34, 197, 94, 0);   }
     }
+
+    /* ── Theme toggle ────────────────────────────────────────────── */
+    .theme-toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.25rem;
+      z-index: 10;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-card);
+      border-radius: 999px;
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      transition:
+        background-color var(--transition-card),
+        color var(--transition-card),
+        border-color var(--transition-card),
+        transform var(--transition-card);
+      font: inherit;
+    }
+
+    .theme-toggle:hover {
+      color: var(--text-accent);
+      border-color: var(--border-accent);
+      transform: translateY(-1px);
+    }
+
+    .theme-toggle:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .theme-toggle svg {
+      width: 1.125rem;
+      height: 1.125rem;
+      display: block;
+    }
+
+    .theme-toggle .icon-sun  { display: none; }
+    .theme-toggle .icon-moon { display: block; }
+
+    :root[data-theme="light"] .theme-toggle .icon-sun  { display: block; }
+    :root[data-theme="light"] .theme-toggle .icon-moon { display: none; }
   </style>
 </head>
 <body>
+
+  <button
+    id="themeToggle"
+    class="theme-toggle"
+    type="button"
+    aria-label="Switch to light mode"
+    aria-pressed="false"
+    title="Toggle theme"
+  >
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+         aria-hidden="true">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
+    </svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+         aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41
+               M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+    </svg>
+  </button>
 
   <header class="page-header">
     <div class="page-eyebrow">Live &middot; Global Time</div>
@@ -384,6 +493,46 @@
 
   <script>
     'use strict';
+
+    // ── Theme toggle ─────────────────────────────────────────────────
+    (function initTheme() {
+      const STORAGE_KEY = 'worldclock-theme';
+      const root = document.documentElement;
+      const btn  = document.getElementById('themeToggle');
+
+      const stored = (() => {
+        try { return localStorage.getItem(STORAGE_KEY); }
+        catch (_) { return null; }
+      })();
+      const prefersLight =
+        window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: light)').matches;
+      const initial = stored || (prefersLight ? 'light' : 'dark');
+
+      function apply(theme) {
+        if (theme === 'light') {
+          root.setAttribute('data-theme', 'light');
+        } else {
+          root.removeAttribute('data-theme');
+        }
+        const isLight = theme === 'light';
+        btn.setAttribute('aria-pressed', String(isLight));
+        btn.setAttribute(
+          'aria-label',
+          isLight ? 'Switch to dark mode' : 'Switch to light mode'
+        );
+      }
+
+      apply(initial);
+
+      btn.addEventListener('click', () => {
+        const next =
+          root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        apply(next);
+        try { localStorage.setItem(STORAGE_KEY, next); }
+        catch (_) { /* storage may be unavailable */ }
+      });
+    })();
 
     // ── City definitions ─────────────────────────────────────────────
     const CITIES = [
