@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Clock — Product Roadmap 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --bg-base:        #0a0c10;
+    --bg-surface:     #0f1218;
+    --bg-card:        #141920;
+    --bg-card-alt:    #181e28;
+    --bg-highlight:   #1c2330;
+    --accent:         #6ea8fe;
+    --accent-dim:     rgba(110, 168, 254, 0.45);
+    --accent-glow:    rgba(110, 168, 254, 0.08);
+    --accent-warm:    #f0a05e;
+    --accent-green:   #22c55e;
+    --accent-red:     #ef4444;
+    --accent-purple:  #a78bfa;
+    --accent-teal:    #2dd4bf;
+    --text-primary:   #e8eaf0;
+    --text-secondary: #8b95a6;
+    --text-tertiary:  #525e70;
+    --text-accent:    #6ea8fe;
+    --font-display:   'DM Sans', sans-serif;
+    --font-mono:      'JetBrains Mono', 'SF Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+  body {
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .deck { position: relative; width: 100vw; height: 100vh; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5vh 8vw;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+                transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+    pointer-events: none;
+    will-change: opacity, transform;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .slide.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 70% -5%, rgba(110, 168, 254, 0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at -5% 60%, rgba(110, 168, 254, 0.03) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .slide > * { position: relative; z-index: 1; }
+
+  .grid-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(110, 168, 254, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(110, 168, 254, 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--accent-dim);
+  }
+
+  .slide-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 4.5vw, 4rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    margin-bottom: 1.5rem;
+  }
+
+  .slide-title .accent { color: var(--accent); }
+  .slide-title .warm   { color: var(--accent-warm); }
+  .slide-title .green  { color: var(--accent-green); }
+  .slide-title .purple { color: var(--accent-purple); }
+  .slide-title .teal   { color: var(--accent-teal); }
+
+  .slide-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 650px;
+    font-weight: 300;
+  }
+
+  .mono { font-family: var(--font-mono); font-size: 0.9em; }
+
+  .slide.active .stagger { animation: fadeUp 0.5s ease both; }
+  .slide.active .stagger:nth-child(1) { animation-delay: 0.1s; }
+  .slide.active .stagger:nth-child(2) { animation-delay: 0.2s; }
+  .slide.active .stagger:nth-child(3) { animation-delay: 0.3s; }
+  .slide.active .stagger:nth-child(4) { animation-delay: 0.4s; }
+  .slide.active .stagger:nth-child(5) { animation-delay: 0.5s; }
+  .slide.active .stagger:nth-child(6) { animation-delay: 0.6s; }
+  .slide.active .stagger:nth-child(7) { animation-delay: 0.7s; }
+  .slide.active .stagger:nth-child(8) { animation-delay: 0.8s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(110, 168, 254, 0); }
+    50%      { box-shadow: 0 0 20px 4px rgba(110, 168, 254, 0.15); }
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-dim) 50%, transparent);
+    opacity: 0.6;
+  }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .card-body {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .card-body li {
+    margin-bottom: 0.35rem;
+    list-style: none;
+    padding-left: 1.1rem;
+    position: relative;
+  }
+
+  .card-body li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.6;
+  }
+
+  .metric {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.1rem 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    margin-bottom: 0.65rem;
+  }
+
+  .metric-value {
+    font-family: var(--font-mono);
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--accent);
+    min-width: 80px;
+  }
+
+  .metric-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 300;
+  }
+
+  .gantt { width: 100%; margin-top: 1.5rem; }
+
+  .gantt-header {
+    display: grid;
+    grid-template-columns: 160px repeat(24, 1fr);
+    gap: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .gantt-header span {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--text-tertiary);
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  .gantt-row {
+    display: grid;
+    grid-template-columns: 160px repeat(24, 1fr);
+    align-items: center;
+    height: 44px;
+    border-top: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .gantt-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding-right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .gantt-bar {
+    height: 26px;
+    border-radius: 6px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.7);
+    overflow: hidden;
+  }
+
+  .gantt-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    pointer-events: none;
+  }
+
+  .gantt-bar.foundation { grid-column: 2 / 6; background: linear-gradient(135deg, rgba(110, 168, 254, 0.25), rgba(110, 168, 254, 0.12)); }
+  .gantt-bar.phase1 { grid-column: 6 / 10; background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(34, 197, 94, 0.12)); }
+  .gantt-bar.phase2 { grid-column: 8 / 14; background: linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(167, 139, 250, 0.12)); }
+  .gantt-bar.phase3 { grid-column: 14 / 20; background: linear-gradient(135deg, rgba(240, 160, 94, 0.25), rgba(240, 160, 94, 0.12)); }
+  .gantt-bar.phase4 { grid-column: 18 / 26; background: linear-gradient(135deg, rgba(45, 212, 191, 0.25), rgba(45, 212, 191, 0.12)); }
+
+  .parallel-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(110, 168, 254, 0.08);
+    border: 1px solid rgba(110, 168, 254, 0.15);
+    border-radius: 4px;
+    padding: 0.2em 0.6em;
+    margin-top: 0.75rem;
+  }
+
+  .parallel-badge .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulseGlow 2s infinite;
+  }
+
+  .risk-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .risk-item {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid;
+  }
+
+  .risk-item.high    { border-left-color: var(--accent-red); }
+  .risk-item.medium  { border-left-color: var(--accent-warm); }
+  .risk-item.low     { border-left-color: var(--accent-green); }
+
+  .risk-severity {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .risk-item.high .risk-severity    { color: var(--accent-red); }
+  .risk-item.medium .risk-severity  { color: var(--accent-warm); }
+  .risk-item.low .risk-severity     { color: var(--accent-green); }
+
+  .risk-title { font-size: 0.88rem; font-weight: 600; margin-bottom: 0.35rem; }
+
+  .risk-mitigation {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(to top, var(--bg-base) 60%, transparent);
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  .nav-bar > * { pointer-events: auto; }
+
+  .progress-track {
+    flex: 1;
+    height: 2px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 1px;
+    margin: 0 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 1px;
+    transition: width 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+    box-shadow: 0 0 8px rgba(110, 168, 254, 0.3);
+  }
+
+  .slide-counter {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.08em;
+    min-width: 60px;
+  }
+
+  .nav-hint {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.08em;
+    opacity: 0.5;
+  }
+
+  .title-slide {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .title-slide .eyebrow { justify-content: center; }
+  .title-slide .eyebrow::before { display: none; }
+
+  .title-slide .slide-title {
+    font-size: clamp(3rem, 6.5vw, 5.5rem);
+    margin-bottom: 1rem;
+  }
+
+  .title-slide .slide-subtitle {
+    max-width: 500px;
+    margin: 0 auto;
+    margin-bottom: 2rem;
+  }
+
+  .title-date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    letter-spacing: 0.12em;
+    margin-top: 2rem;
+  }
+
+  .clock-display {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+
+  .clock-sep {
+    animation: colonBlink 1s step-start infinite;
+  }
+
+  @keyframes colonBlink {
+    0%, 49%  { opacity: 0.6; }
+    50%, 100% { opacity: 0.15; }
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1.5rem;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  .four-col {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .stat-block {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+  }
+
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: 2.4rem;
+    font-weight: 500;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+
+  .method-steps {
+    display: flex;
+    gap: 0;
+    margin-top: 1.5rem;
+    align-items: stretch;
+  }
+
+  .method-step {
+    flex: 1;
+    padding: 1rem 1.25rem;
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .method-step:first-child { border-radius: 12px 0 0 12px; }
+  .method-step:last-child  { border-radius: 0 12px 12px 0; }
+
+  .method-step .step-num {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5rem;
+  }
+
+  .method-step .step-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .method-step .step-desc {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-weight: 300;
+    line-height: 1.4;
+  }
+
+  .method-step + .method-step::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background: rgba(110, 168, 254, 0.15);
+  }
+
+  .cta-slide {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .cta-slide .eyebrow { justify-content: center; }
+  .cta-slide .eyebrow::before { display: none; }
+
+  .clock-ring {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    border: 1px solid rgba(110, 168, 254, 0.06);
+    top: 50%;
+    right: -100px;
+    transform: translateY(-50%);
+    z-index: 0;
+  }
+
+  .clock-ring::before {
+    content: '';
+    position: absolute;
+    inset: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(110, 168, 254, 0.04);
+  }
+
+  .clock-ring::after {
+    content: '';
+    position: absolute;
+    inset: 60px;
+    border-radius: 50%;
+    border: 1px solid rgba(110, 168, 254, 0.03);
+  }
+
+  .clock-ring .hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .clock-ring .hand.hour {
+    width: 2px;
+    height: 80px;
+    opacity: 0.3;
+    animation: rotateHand 43200s linear infinite;
+  }
+
+  .clock-ring .hand.minute {
+    width: 1.5px;
+    height: 110px;
+    opacity: 0.2;
+    animation: rotateHand 3600s linear infinite;
+  }
+
+  .clock-ring .hand.second {
+    width: 1px;
+    height: 130px;
+    opacity: 0.15;
+    animation: rotateHand 60s linear infinite;
+  }
+
+  @keyframes rotateHand {
+    from { transform: translateX(-50%) rotate(0deg); }
+    to   { transform: translateX(-50%) rotate(360deg); }
+  }
+
+  .live-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+    animation: livePulse 2s ease-out infinite;
+    vertical-align: middle;
+    margin-right: 0.4rem;
+  }
+
+  @keyframes livePulse {
+    0%   { box-shadow: 0 0 0 0   rgba(34, 197, 94, 0.5); }
+    60%  { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);   }
+    100% { box-shadow: 0 0 0 0   rgba(34, 197, 94, 0);   }
+  }
+
+  .slide[data-accent="green"] .eyebrow { color: var(--accent-green); }
+  .slide[data-accent="green"] .eyebrow::before { background: rgba(34, 197, 94, 0.45); }
+  .slide[data-accent="purple"] .eyebrow { color: var(--accent-purple); }
+  .slide[data-accent="purple"] .eyebrow::before { background: rgba(167, 139, 250, 0.45); }
+  .slide[data-accent="warm"] .eyebrow { color: var(--accent-warm); }
+  .slide[data-accent="warm"] .eyebrow::before { background: rgba(240, 160, 94, 0.45); }
+  .slide[data-accent="teal"] .eyebrow { color: var(--accent-teal); }
+  .slide[data-accent="teal"] .eyebrow::before { background: rgba(45, 212, 191, 0.45); }
+
+  .icon-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .icon-circle.blue   { background: rgba(110, 168, 254, 0.12); }
+  .icon-circle.green  { background: rgba(34, 197, 94, 0.12); }
+  .icon-circle.purple { background: rgba(167, 139, 250, 0.12); }
+  .icon-circle.warm   { background: rgba(240, 160, 94, 0.12); }
+  .icon-circle.teal   { background: rgba(45, 212, 191, 0.12); }
+
+  .stat-unit { font-size: 0.5em; }
+
+  @media (max-width: 900px) {
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .four-col { grid-template-columns: 1fr 1fr; }
+    .gantt-header, .gantt-row { grid-template-columns: 120px repeat(24, 1fr); }
+    .risk-grid { grid-template-columns: 1fr; }
+    .slide { padding: 4vh 5vw; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1 — TITLE -->
+  <div class="slide title-slide grid-bg active" data-slide="0">
+    <div class="clock-ring" aria-hidden="true">
+      <div class="hand hour"></div>
+      <div class="hand minute"></div>
+      <div class="hand second"></div>
+    </div>
+    <div class="stagger">
+      <div class="clock-display" id="liveClock" aria-label="Current time"></div>
+    </div>
+    <div class="stagger">
+      <div class="eyebrow">Product Roadmap &middot; 2026</div>
+    </div>
+    <div class="stagger">
+      <h1 class="slide-title">World <span class="accent">Clock</span></h1>
+    </div>
+    <div class="stagger">
+      <p class="slide-subtitle">
+        From beautiful utility to the world's most delightful
+        time-awareness experience.
+      </p>
+    </div>
+    <div class="stagger">
+      <div class="title-date">Q2 &ndash; Q4 2026 &middot; 24 Weeks &middot; 4 Feature Phases</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2 — VISION -->
+  <div class="slide grid-bg" data-slide="1">
+    <div class="stagger"><div class="eyebrow">The Vision</div></div>
+    <div class="stagger">
+      <h2 class="slide-title">Time, <span class="accent">Reimagined</span></h2>
+    </div>
+    <div class="stagger">
+      <p class="slide-subtitle" style="margin-bottom: 2rem;">
+        World Clock isn't just a utility. It's an opportunity to make global time
+        intuitive, educational, and personal &mdash; a daily companion that
+        delights millions of users.
+      </p>
+    </div>
+    <div class="three-col">
+      <div class="card stagger">
+        <div class="card-title"><span class="icon-circle blue">&#9202;</span> Delight</div>
+        <div class="card-body">Analog clocks, visual themes, and micro-interactions that make checking the time a moment of joy.</div>
+      </div>
+      <div class="card stagger">
+        <div class="card-title"><span class="icon-circle warm">&#128218;</span> Educate</div>
+        <div class="card-body">In-app explainers on timezones, DST, relativity, and atomic clocks. No other world clock teaches.</div>
+      </div>
+      <div class="card stagger">
+        <div class="card-title"><span class="icon-circle green">&#9201;</span> Empower</div>
+        <div class="card-body">Stopwatches and countdown timers that persist across reloads. Productivity meets polish.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 — CURRENT STATE -->
+  <div class="slide grid-bg" data-slide="2">
+    <div class="stagger"><div class="eyebrow">Where We Are Today</div></div>
+    <div class="stagger">
+      <h2 class="slide-title">A <span class="accent">Solid</span> Foundation</h2>
+    </div>
+    <div class="two-col" style="margin-top: 1.5rem;">
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="card stagger">
+          <div class="card-title">&#9889; Production-Ready</div>
+          <div class="card-body">
+            <ul>
+              <li>Single HTML file, 17KB, zero dependencies</li>
+              <li>Dark-themed UI with 6 global cities</li>
+              <li>Live-updating, sub-second accuracy</li>
+              <li>Deployed on Google Cloud Run</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card stagger">
+          <div class="card-title">&#128295; Infrastructure</div>
+          <div class="card-body">
+            <ul>
+              <li>GitHub Actions CI/CD pipeline</li>
+              <li>Nginx container with auto-deploy</li>
+              <li>Vanilla JS &mdash; no framework lock-in</li>
+              <li>Responsive grid, mobile-ready</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="four-col stagger" style="margin-top: 0;">
+          <div class="stat-block">
+            <div class="stat-value" style="color: var(--accent);">17<span class="stat-unit">KB</span></div>
+            <div class="stat-label">Total Size</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-value" style="color: var(--accent-green);">0</div>
+            <div class="stat-label">Dependencies</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-value" style="color: var(--accent-warm);">6</div>
+            <div class="stat-label">Global Cities</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-value" style="color: var(--accent-purple);">1<span class="stat-unit">s</span></div>
+            <div class="stat-label">Tick Interval</div>
+          </div>
+        </div>
+        <div class="card stagger">
+          <div class="card-title">&#128680; What's Missing</div>
+          <div class="card-body">
+            <ul>
+              <li>No test framework or CI gates</li>
+              <li>No shared state or persistence</li>
+              <li>No CSS token architecture</li>
+              <li>No accessibility compliance</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 — FOUNDATION (PHASE 0) -->
+  <div class="slide grid-bg" data-slide="3">
+    <div class="stagger"><div class="eyebrow">Phase 0 &mdash; The Critical Path</div></div>
+    <div class="stagger">
+      <h2 class="slide-title"><span class="accent">Foundation</span> First</h2>
+    </div>
+    <div class="stagger">
+      <p class="slide-subtitle" style="margin-bottom: 1rem;">
+        Every feature is gated behind Foundation. Weeks 1&ndash;4 are non-negotiable.
+      </p>
+    </div>
+
+    <div class="method-steps stagger">
+      <div class="method-step">
+        <div class="step-num">01</div>
+        <div class="step-name">Test Framework</div>
+        <div class="step-desc">Vitest + CI gates on every PR. No merge without green.</div>
+      </div>
+      <div class="method-step">
+        <div class="step-num">02</div>
+        <div class="step-name">State Store</div>
+        <div class="step-desc">Shared localStorage layer with migration support.</div>
+      </div>
+      <div class="method-step">
+        <div class="step-num">03</div>
+        <div class="step-name">CSS Tokens</div>
+        <div class="step-desc">Design token architecture for themes, spacing, and color.</div>
+      </div>
+      <div class="method-step">
+        <div class="step-num">04</div>
+        <div class="step-name">A11y Baseline</div>
+        <div class="step-desc">ARIA patterns, focus management, reduced-motion support.</div>
+      </div>
+      <div class="method-step">
+        <div class="step-num">05</div>
+        <div class="step-name">CI Pipeline</div>
+        <div class="step-desc">Lighthouse CI, build checks, automated deploy gates.</div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 2rem; margin-top: 1.5rem;" class="stagger">
+      <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-tertiary);">
+        Issues #7 &ndash; #11 &middot; 4 weeks &middot; 5 deliverables
+      </div>
+      <div class="parallel-badge">
+        <span class="dot"></span> ALL FEATURES GATED
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 — ANALOG CLOCK TOGGLE -->
+  <div class="slide grid-bg" data-slide="4" data-accent="green">
+    <div class="stagger"><div class="eyebrow">Phase 1 &mdash; Weeks 5&ndash;8</div></div>
+    <div class="stagger">
+      <h2 class="slide-title">Analog Clock <span class="green">Toggle</span></h2>
+    </div>
+    <div class="two-col" style="margin-top: 1rem;">
+      <div>
+        <p class="slide-subtitle stagger" style="margin-bottom: 1.5rem;">
+          Users switch each city between digital and analog display.
+          A tactile, visual moment that transforms the experience.
+        </p>
+        <div class="card stagger">
+          <div class="card-title" style="color: var(--accent-green);">Key Deliverables</div>
+          <div class="card-body">
+            <ul>
+              <li>SVG-based analog clock face with animated hands</li>
+              <li>Per-city toggle with smooth crossfade transition</li>
+              <li>Full keyboard accessibility (tab + enter)</li>
+              <li>Persisted preference via localStorage state store</li>
+              <li>Reduced-motion variant for accessibility</li>
+            </ul>
+          </div>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); margin-top: 1rem;" class="stagger">
+          Issues #12 &ndash; #16 &middot; 5 issues
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: center;" class="stagger">
+        <svg width="220" height="220" viewBox="0 0 220 220" style="opacity: 0.7;" aria-hidden="true">
+          <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(34,197,94,0.15)" stroke-width="1.5"/>
+          <circle cx="110" cy="110" r="90" fill="none" stroke="rgba(34,197,94,0.08)" stroke-width="1"/>
+          <line x1="110" y1="20" x2="110" y2="30" stroke="rgba(34,197,94,0.4)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="200" y1="110" x2="190" y2="110" stroke="rgba(34,197,94,0.4)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="110" y1="200" x2="110" y2="190" stroke="rgba(34,197,94,0.4)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="20" y1="110" x2="30" y2="110" stroke="rgba(34,197,94,0.4)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="110" y1="110" x2="110" y2="50" stroke="rgba(34,197,94,0.5)" stroke-width="2.5" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" from="0 110 110" to="360 110 110" dur="43200s" repeatCount="indefinite"/>
+          </line>
+          <line x1="110" y1="110" x2="110" y2="35" stroke="rgba(34,197,94,0.35)" stroke-width="1.5" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" from="0 110 110" to="360 110 110" dur="3600s" repeatCount="indefinite"/>
+          </line>
+          <line x1="110" y1="110" x2="110" y2="25" stroke="rgba(34,197,94,0.2)" stroke-width="0.75" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" from="0 110 110" to="360 110 110" dur="60s" repeatCount="indefinite"/>
+          </line>
+          <circle cx="110" cy="110" r="3" fill="rgba(34,197,94,0.6)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6 — VISUAL THEMES -->
+  <div class="slide grid-bg" data-slide="5" data-accent="purple">
+    <div class="stagger"><div class="eyebrow">Phase 2 &mdash; Weeks 7&ndash;12</div></div>
+    <div class="stagger">
+      <h2 class="slide-title">Visual <span class="purple">Themes</span></h2>
+    </div>
+    <div class="stagger">
+      <p class="slide-subtitle" style="margin-bottom: 1.5rem;">
+        Four distinct themes that transform the entire experience. WCAG AA compliant.
+        Respects <span class="mono">prefers-color-scheme</span> with zero FOUC.
+      </p>
+    </div>
+    <div class="four-col">
+      <div class="card stagger" style="border-top: 2px solid rgba(110, 168, 254, 0.4);">
+        <div class="card-title" style="font-size: 0.9rem;">Midnight</div>
+        <div class="card-body" style="font-size: 0.78rem;">
+          The current dark theme, refined. Deep blacks, blue accents, perfect for low-light.
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--accent); margin-top: 0.75rem; letter-spacing: 0.05em;">DEFAULT</div>
+      </div>
+      <div class="card stagger" style="border-top: 2px solid rgba(255, 220, 120, 0.4);">
+        <div class="card-title" style="font-size: 0.9rem;">Daylight</div>
+        <div class="card-body" style="font-size: 0.78rem;">
+          Clean white surfaces, warm neutrals, high readability for bright environments.
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-tertiary); margin-top: 0.75rem; letter-spacing: 0.05em;">LIGHT MODE</div>
+      </div>
+      <div class="card stagger" style="border-top: 2px solid rgba(255, 255, 255, 0.4);">
+        <div class="card-title" style="font-size: 0.9rem;">High Contrast</div>
+        <div class="card-body" style="font-size: 0.78rem;">
+          Maximum contrast ratios, bold borders, designed for visual accessibility.
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-tertiary); margin-top: 0.75rem; letter-spacing: 0.05em;">WCAG AAA</div>
+      </div>
+      <div class="card stagger" style="border-top: 2px solid rgba(210, 170, 120, 0.4);">
+        <div class="card-title" style="font-size: 0.9rem;">Sepia</div>
+        <div class="card-body" style="font-size: 0.78rem;">
+          Warm, paper-like tones. Reduces blue light. Inspired by vintage timepieces.
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-tertiary); margin-top: 0.75rem; letter-spacing: 0.05em;">WARM TONE</div>
+      </div>
+    </div>
+    <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); margin-top: 1.25rem;" class="stagger">
+      Issues #17 &ndash; #21 &middot; 5 issues &middot; Overlaps with Phase 1
+    </div>
+  </div>
+
+  <!-- SLIDE 7 — EDUCATIONAL PANELS -->
+  <div class="slide grid-bg" data-slide="6" data-accent="warm">
+    <div class="stagger"><div class="eyebrow">Phase 3 &mdash; Weeks 13&ndash;18</div></div>
+    <div class="stagger">
+      <h2 class="slide-title">Educational <span class="warm">Panels</span></h2>
+    </div>
+    <div class="stagger">
+      <p class="slide-subtitle" style="margin-bottom: 1.5rem;">
+        The differentiator. No other world clock app teaches users <em>why</em> time works
+        the way it does. Five authoritative explainers in an elegant drawer pattern.
+      </p>
+    </div>
+    <div class="two-col">
+      <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+        <div class="metric stagger">
+          <div class="icon-circle warm" style="font-size: 0.9rem;">&#127758;</div>
+          <div>
+            <div style="font-weight: 500; font-size: 0.88rem;">Timezones Explained</div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">IANA tz database, UTC offsets, the International Date Line</div>
+          </div>
+        </div>
+        <div class="metric stagger">
+          <div class="icon-circle warm" style="font-size: 0.9rem;">&#9728;&#65039;</div>
+          <div>
+            <div style="font-weight: 500; font-size: 0.88rem;">Daylight Saving Time</div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">History, global adoption, spring-forward mechanics</div>
+          </div>
+        </div>
+        <div class="metric stagger">
+          <div class="icon-circle warm" style="font-size: 0.9rem;">&#128640;</div>
+          <div>
+            <div style="font-weight: 500; font-size: 0.88rem;">Spacetime &amp; Relativity</div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">GPS correction, time dilation, Einstein made accessible</div>
+          </div>
+        </div>
+        <div class="metric stagger">
+          <div class="icon-circle warm" style="font-size: 0.9rem;">&#128197;</div>
+          <div>
+            <div style="font-weight: 500; font-size: 0.88rem;">Leap Year &amp; Leap Second</div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">Gregorian calendar, Earth's rotation, IERS bulletins</div>
+          </div>
+        </div>
+        <div class="metric stagger">
+          <div class="icon-circle warm" style="font-size: 0.9rem;">&#9203;</div>
+          <div>
+            <div style="font-weight: 500; font-size: 0.88rem;">Atomic Clocks</div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">Cesium-133, NIST-F2, how the world stays synchronized</div>
+          </div>
+        </div>
+      </div>
+      <div class="card stagger" style="display: flex; flex-direction: column; justify-content: center;">
+        <div class="card-title" style="color: var(--accent-warm); font-size: 1.1rem;">Why This Matters</div>
+        <div class="card-body" style="font-size: 0.88rem; line-height: 1.7;">
+          <p style="margin-bottom: 1rem;">
+            Educational content is our <strong style="color: var(--text-primary);">moat</strong>.
+            It transforms World Clock from a forgettable utility into a
+            <strong style="color: var(--text-primary);">destination</strong>.
+          </p>
+          <p style="margin-bottom: 1rem;">
+            Sources include IERS, NIST, and the IANA tz database.
+            Every claim is cited. Every panel is fully accessible.
+          </p>
+          <p style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-warm);">
+            Issues #22 &ndash; #26 &middot; Drawer pattern with full a11y
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8 — TIMERS & STOPWATCHES -->
+  <div class="slide grid-bg" data-slide="7" data-accent="teal">
+    <div class="stagger"><div class="eyebrow">Phase 4 &mdash; Weeks 17&ndash;24</div></div>
+    <div class="stagger">
+      <h2 class="slide-title">Timers &amp; <span class="teal">Stopwatches</span></h2>
+    </div>
+    <div class="two-col" style="margin-top: 1rem;">
+      <div>
+        <p class="slide-subtitle stagger" style="margin-bottom: 1.5rem;">
+          Productivity tools that reuse the existing tick loop. Persisted across
+          reloads. Audio + visual alerts on countdown completion.
+        </p>
+        <div class="two-col stagger" style="gap: 0.75rem; margin-top: 0;">
+          <div class="card">
+            <div class="card-title" style="color: var(--accent-teal); font-size: 0.95rem;">Stopwatch</div>
+            <div class="card-body">
+              <ul>
+                <li>Start / Stop / Reset</li>
+                <li>Lap recording</li>
+                <li>Millisecond precision</li>
+                <li>Persisted state</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="color: var(--accent-teal); font-size: 0.95rem;">Countdown</div>
+            <div class="card-body">
+              <ul>
+                <li>Custom duration input</li>
+                <li>Audio alert on finish</li>
+                <li>Visual progress ring</li>
+                <li>Background-tab safe</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: center;" class="stagger">
+        <svg width="200" height="240" viewBox="0 0 200 240" style="opacity: 0.6;" aria-hidden="true">
+          <rect x="88" y="8" width="24" height="16" rx="4" fill="none" stroke="rgba(45,212,191,0.3)" stroke-width="1.5"/>
+          <circle cx="100" cy="140" r="85" fill="none" stroke="rgba(45,212,191,0.12)" stroke-width="1.5"/>
+          <circle cx="100" cy="140" r="78" fill="none" stroke="rgba(45,212,191,0.06)" stroke-width="1"/>
+          <circle cx="100" cy="140" r="85" fill="none" stroke="rgba(45,212,191,0.3)" stroke-width="2.5" stroke-linecap="round"
+            stroke-dasharray="534" stroke-dashoffset="160" transform="rotate(-90 100 140)">
+            <animate attributeName="stroke-dashoffset" from="534" to="0" dur="60s" repeatCount="indefinite"/>
+          </circle>
+          <text x="100" y="135" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="28" fill="rgba(45,212,191,0.6)" font-weight="300">02:47</text>
+          <text x="100" y="158" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(45,212,191,0.3)" letter-spacing="0.15em">.83</text>
+          <line x1="100" y1="58" x2="100" y2="66" stroke="rgba(45,212,191,0.3)" stroke-width="1.5"/>
+          <line x1="185" y1="140" x2="177" y2="140" stroke="rgba(45,212,191,0.3)" stroke-width="1.5"/>
+          <line x1="100" y1="222" x2="100" y2="214" stroke="rgba(45,212,191,0.3)" stroke-width="1.5"/>
+          <line x1="15" y1="140" x2="23" y2="140" stroke="rgba(45,212,191,0.3)" stroke-width="1.5"/>
+        </svg>
+      </div>
+    </div>
+    <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); margin-top: 1rem;" class="stagger">
+      Issues #27 &ndash; #31 &middot; Reuses existing tick loop &middot; Overlaps with Phase 3
+    </div>
+  </div>
+
+  <!-- SLIDE 9 — TIMELINE / GANTT -->
+  <div class="slide grid-bg" data-slide="8">
+    <div class="stagger"><div class="eyebrow">Timeline &amp; Parallel Streams</div></div>
+    <div class="stagger">
+      <h2 class="slide-title" style="font-size: clamp(1.8rem, 3.5vw, 3rem);">24 Weeks. <span class="accent">4 Phases.</span> Parallel Opportunity.</h2>
+    </div>
+
+    <div class="gantt stagger">
+      <div class="gantt-header">
+        <span></span>
+        <span>1</span><span>2</span><span>3</span><span>4</span>
+        <span>5</span><span>6</span><span>7</span><span>8</span>
+        <span>9</span><span>10</span><span>11</span><span>12</span>
+        <span>13</span><span>14</span><span>15</span><span>16</span>
+        <span>17</span><span>18</span><span>19</span><span>20</span>
+        <span>21</span><span>22</span><span>23</span><span>24</span>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label" style="color: var(--accent);"><span style="font-size: 0.9rem;">&#9881;</span> Foundation</div>
+        <div class="gantt-bar foundation">WK 1&ndash;4</div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label" style="color: var(--accent-green);"><span style="font-size: 0.9rem;">&#128339;</span> Analog Clock</div>
+        <div class="gantt-bar phase1">WK 5&ndash;8</div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label" style="color: var(--accent-purple);"><span style="font-size: 0.9rem;">&#127912;</span> Themes</div>
+        <div class="gantt-bar phase2">WK 7&ndash;12</div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label" style="color: var(--accent-warm);"><span style="font-size: 0.9rem;">&#128218;</span> Edu Panels</div>
+        <div class="gantt-bar phase3">WK 13&ndash;18</div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label" style="color: var(--accent-teal);"><span style="font-size: 0.9rem;">&#9201;</span> Timers</div>
+        <div class="gantt-bar phase4">WK 17&ndash;24</div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 1.5rem; margin-top: 1.25rem; flex-wrap: wrap;">
+      <div class="parallel-badge stagger">
+        <span class="dot"></span> PARALLEL: PHASES 1+2 (WK 7&ndash;8)
+      </div>
+      <div class="parallel-badge stagger">
+        <span class="dot"></span> PARALLEL: PHASES 3+4 (WK 17&ndash;18)
+      </div>
+      <div class="stagger" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-tertiary); display: flex; align-items: center; letter-spacing: 0.05em;">
+        Research+Spec phases can run concurrently across all 4 features
+      </div>
+    </div>
+
+    <div class="stagger" style="margin-top: 1rem;">
+      <div class="method-steps">
+        <div class="method-step">
+          <div class="step-num">PHASE</div>
+          <div class="step-name">Research</div>
+        </div>
+        <div class="method-step">
+          <div class="step-num">PHASE</div>
+          <div class="step-name">Spec</div>
+        </div>
+        <div class="method-step">
+          <div class="step-num">PHASE</div>
+          <div class="step-name">Build</div>
+        </div>
+        <div class="method-step">
+          <div class="step-num">PHASE</div>
+          <div class="step-name">Test</div>
+        </div>
+        <div class="method-step">
+          <div class="step-num">PHASE</div>
+          <div class="step-name">Ship</div>
+        </div>
+      </div>
+      <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-tertiary); margin-top: 0.5rem; letter-spacing: 0.05em; text-align: center;">
+        5-Phase Methodology &middot; Applied to all 25 GitHub Issues
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10 — NORTH STAR METRICS -->
+  <div class="slide grid-bg" data-slide="9">
+    <div class="stagger"><div class="eyebrow">Success Criteria</div></div>
+    <div class="stagger">
+      <h2 class="slide-title">North Star <span class="accent">Metrics</span></h2>
+    </div>
+    <div class="stagger">
+      <p class="slide-subtitle" style="margin-bottom: 2rem;">
+        Five measurable gates that every release must pass. No exceptions.
+      </p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+      <div class="metric stagger">
+        <div class="metric-value" style="color: var(--accent);">&ge; 95</div>
+        <div class="metric-label">Lighthouse Performance score on every deploy</div>
+      </div>
+      <div class="metric stagger">
+        <div class="metric-value" style="color: var(--accent-purple);">AA</div>
+        <div class="metric-label">WCAG compliance across all four visual themes</div>
+      </div>
+      <div class="metric stagger">
+        <div class="metric-value" style="color: var(--accent-green);">&gt; 80%</div>
+        <div class="metric-label">Test coverage on all new feature code</div>
+      </div>
+      <div class="metric stagger">
+        <div class="metric-value" style="color: var(--accent-warm);">1:1</div>
+        <div class="metric-label">Mobile Safari parity &mdash; every feature works identically</div>
+      </div>
+      <div class="metric stagger">
+        <div class="metric-value" style="color: var(--accent-teal);">&lt; 1s</div>
+        <div class="metric-label">Page load time on simulated 4G connection</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11 — RISKS & MITIGATIONS -->
+  <div class="slide grid-bg" data-slide="10">
+    <div class="stagger"><div class="eyebrow">Risk Assessment</div></div>
+    <div class="stagger">
+      <h2 class="slide-title">Risks &amp; <span class="accent">Mitigations</span></h2>
+    </div>
+    <div class="risk-grid">
+      <div class="risk-item high stagger">
+        <div class="risk-severity">HIGH RISK</div>
+        <div class="risk-title">Mobile Safari Background Tabs</div>
+        <div class="risk-mitigation">
+          Safari throttles timers in background tabs. Mitigation: use requestAnimationFrame with
+          visibilitychange recovery, persist timer state on every tick.
+        </div>
+      </div>
+      <div class="risk-item medium stagger">
+        <div class="risk-severity">MEDIUM RISK</div>
+        <div class="risk-title">Theme FOUC on Load</div>
+        <div class="risk-mitigation">
+          Flash of unstyled content when theme loads from localStorage. Mitigation: inline blocking script
+          in head applies theme class before first paint.
+        </div>
+      </div>
+      <div class="risk-item medium stagger">
+        <div class="risk-severity">MEDIUM RISK</div>
+        <div class="risk-title">Bundle Size Creep</div>
+        <div class="risk-mitigation">
+          Educational content + SVG clocks could push past performance budget. Mitigation: lazy-load panels,
+          inline critical SVG only, CI size gate.
+        </div>
+      </div>
+      <div class="risk-item low stagger">
+        <div class="risk-severity">LOW RISK</div>
+        <div class="risk-title">localStorage Quota</div>
+        <div class="risk-mitigation">
+          User preferences + timer state could approach 5MB limit on some browsers. Mitigation: structured
+          cleanup on version migration, compression.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12 — CALL TO ACTION -->
+  <div class="slide cta-slide grid-bg" data-slide="11">
+    <div class="clock-ring" aria-hidden="true" style="right: auto; left: -100px;">
+      <div class="hand hour"></div>
+      <div class="hand minute"></div>
+      <div class="hand second"></div>
+    </div>
+    <div class="stagger">
+      <div class="eyebrow"><span class="live-dot" aria-hidden="true"></span> Ready to Build</div>
+    </div>
+    <div class="stagger">
+      <h2 class="slide-title" style="font-size: clamp(2.5rem, 5.5vw, 4.5rem);">
+        The Time is <span class="accent">Now</span>
+      </h2>
+    </div>
+    <div class="stagger">
+      <p class="slide-subtitle" style="max-width: 560px; margin: 0 auto 0.5rem;">
+        25 issues planned. 5-phase methodology proven. Foundation ready to begin.
+        Let's make time beautiful.
+      </p>
+    </div>
+    <div style="display: flex; justify-content: center; gap: 2.5rem; margin-top: 2.5rem; flex-wrap: wrap;">
+      <div class="stat-block stagger" style="min-width: 130px;">
+        <div class="stat-value" style="color: var(--accent);">25</div>
+        <div class="stat-label">GitHub Issues</div>
+      </div>
+      <div class="stat-block stagger" style="min-width: 130px;">
+        <div class="stat-value" style="color: var(--accent-green);">24</div>
+        <div class="stat-label">Weeks</div>
+      </div>
+      <div class="stat-block stagger" style="min-width: 130px;">
+        <div class="stat-value" style="color: var(--accent-purple);">4</div>
+        <div class="stat-label">Features</div>
+      </div>
+      <div class="stat-block stagger" style="min-width: 130px;">
+        <div class="stat-value" style="color: var(--accent-warm);">1</div>
+        <div class="stat-label">Foundation</div>
+      </div>
+    </div>
+    <div class="stagger" style="margin-top: 3rem;">
+      <div class="title-date">World Clock Product Roadmap &middot; Q2&ndash;Q4 2026</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAVIGATION BAR -->
+<div class="nav-bar">
+  <div class="slide-counter" id="slideCounter">01 / 12</div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width: 8.33%"></div>
+  </div>
+  <div class="nav-hint">Arrow keys to navigate</div>
+</div>
+
+<script>
+'use strict';
+
+var slides = document.querySelectorAll('.slide');
+var total = slides.length;
+var current = 0;
+
+function goTo(index) {
+  if (index < 0 || index >= total || index === current) return;
+
+  var prev = slides[current];
+  var next = slides[index];
+
+  if (index > current) {
+    prev.classList.remove('active');
+    prev.classList.add('exit-left');
+    next.style.transform = 'translateX(60px)';
+  } else {
+    prev.classList.remove('active');
+    prev.style.transform = 'translateX(60px)';
+    next.classList.remove('exit-left');
+    next.style.transform = 'translateX(-60px)';
+  }
+
+  void next.offsetWidth;
+
+  next.classList.add('active');
+  next.style.transform = '';
+
+  setTimeout(function() {
+    prev.classList.remove('exit-left');
+    prev.style.transform = '';
+  }, 650);
+
+  current = index;
+
+  document.getElementById('slideCounter').textContent =
+    String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+
+  document.getElementById('progressFill').style.width =
+    ((current + 1) / total * 100) + '%';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault();
+    goTo(current + 1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    goTo(current - 1);
+  } else if (e.key === 'Home') {
+    e.preventDefault();
+    goTo(0);
+  } else if (e.key === 'End') {
+    e.preventDefault();
+    goTo(total - 1);
+  }
+});
+
+var touchStartX = 0;
+var touchStartY = 0;
+
+document.addEventListener('touchstart', function(e) {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchStartX;
+  var dy = e.changedTouches[0].clientY - touchStartY;
+
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+    if (dx < 0) goTo(current + 1);
+    else goTo(current - 1);
+  }
+}, { passive: true });
+
+document.addEventListener('click', function(e) {
+  if (e.target.closest('.nav-bar') || e.target.closest('button') || e.target.closest('a')) return;
+  var x = e.clientX / window.innerWidth;
+  if (x < 0.33) goTo(current - 1);
+  else goTo(current + 1);
+});
+
+/* Live clock on title slide — uses safe DOM methods, no innerHTML */
+function updateTitleClock() {
+  var now = new Date();
+  var h = String(now.getHours()).padStart(2, '0');
+  var m = String(now.getMinutes()).padStart(2, '0');
+  var s = String(now.getSeconds()).padStart(2, '0');
+  var el = document.getElementById('liveClock');
+  if (!el) return;
+
+  /* Clear existing children */
+  while (el.firstChild) el.removeChild(el.firstChild);
+
+  var hSpan = document.createElement('span');
+  hSpan.textContent = h;
+  el.appendChild(hSpan);
+
+  var sep1 = document.createElement('span');
+  sep1.className = 'clock-sep';
+  sep1.textContent = ':';
+  el.appendChild(sep1);
+
+  var mSpan = document.createElement('span');
+  mSpan.textContent = m;
+  el.appendChild(mSpan);
+
+  var sep2 = document.createElement('span');
+  sep2.className = 'clock-sep';
+  sep2.textContent = ':';
+  el.appendChild(sep2);
+
+  var sSpan = document.createElement('span');
+  sSpan.textContent = s;
+  el.appendChild(sSpan);
+}
+
+updateTitleClock();
+setInterval(updateTitleClock, 1000);
+</script>
+
+</body>
+</html>
