@@ -32,8 +32,8 @@ describe('clock logic', () => {
     expect(tokyoAbbr).toMatch(/JST|GMT\+9/);
   });
 
-  it('should have 6 cities defined', () => {
-    expect(CITIES).toHaveLength(6);
+  it('should have 7 cities defined', () => {
+    expect(CITIES).toHaveLength(7);
   });
 
   describe('getHandAngles', () => {

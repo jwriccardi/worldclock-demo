@@ -4,6 +4,7 @@
 
 export const CITIES = [
   { name: 'New York',    country: 'United States',  tz: 'America/New_York'    },
+  { name: 'Chicago',     country: 'United States',  tz: 'America/Chicago'     },
   { name: 'London',      country: 'United Kingdom', tz: 'Europe/London'       },
   { name: 'Dubai',       country: 'UAE',            tz: 'Asia/Dubai'          },
   { name: 'Mumbai',      country: 'India',          tz: 'Asia/Kolkata'        },
